@@ -266,3 +266,27 @@ button {
     margin: 10px auto;
     display: none;
 }
+
+#edit-viewer {
+    width: 100%;
+    height: 100%;
+}
+
+#capture-viewer {
+    width: 100%;
+    height: 100%;
+}
+
+#perspective-viewer {
+    width: 100%;
+    height: 100%;
+}
+
+#browse-viewer {
+    width: 100%;
+    height: 100%;
+}
+
+#input-container {
+    display: none;
+}

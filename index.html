@@ -31,33 +31,52 @@
             id="licensekey">
         <button id="activateButton">Activate SDK</button>
 
-        <input type="file" id="fileInput" accept="application/pdf,image/png,image/jpeg,image/tiff">
-        <input type="text" placeholder="File name" id="filename">
-        <select id="format">
-            <option value="pdf">PDF</option>
-            <option value="png">PNG</option>
-            <option value="jpeg">JPEG</option>
-            <option value="tiff">TIFF</option>
-        </select>
-        <button id="saveButton">save</button>
-        <div class="row">
-            <div class="full-img">
-                <img id="scanner-image">
+        <div id="input-container">
+            <input type="file" id="fileInput" accept="application/pdf,image/png,image/jpeg,image/tiff">
+            <input type="text" placeholder="File name" id="filename">
+            <select id="format">
+                <option value="pdf">PDF</option>
+                <option value="png">PNG</option>
+                <option value="jpeg">JPEG</option>
+                <option value="tiff">TIFF</option>
+            </select>
+            <button id="saveButton">Convert</button>
+            <div class="row">
+                <div class="full-img">
+                    <img id="scanner-image">
+                </div>
             </div>
-        </div>
 
-        <div class="row">
-            <div class="thumb-bar" id="thumb-bar">
-                <div class="thumb-box" id="thumb-box">
+            <div class="row">
+                <div class="thumb-bar" id="thumb-bar">
+                    <div class="thumb-box" id="thumb-box">
+                    </div>
                 </div>
             </div>
         </div>
+
     </div>
 
-    <div id="edit-viewer" class="document-viewer"></div>
-    <div id="capture-viewer" class="document-viewer"></div>
-    <div id="perspective-viewer" class="document-viewer"></div>
-    <div id="browse-viewer" class="document-viewer"></div>
+    <div class="document-viewer">
+        <h2>EditViewer</h2>
+        <div id="edit-viewer"></div>
+    </div>
+
+    <div class="document-viewer">
+        <h2>CaptureViewer</h2>
+        <div id="capture-viewer"></div>
+    </div>
+
+    <div class="document-viewer">
+        <h2>PerspectiveViewer</h2>
+        <div id="perspective-viewer"></div>
+    </div>
+
+    <div class="document-viewer">
+        <h2>BrowseViewer</h2>
+        <div id="browse-viewer"></div>
+    </div>
+
     <script src="main.js"></script>
 </body>
 

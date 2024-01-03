@@ -36,7 +36,8 @@ function loadURLtoBlob(url) {
         })
         .then(blob => {
             let doc = docManager.createDocument();
-            doc.loadSource(blob).then(() => {
+            doc.loadSource(blob).then(async () => {
+                await doc.saveToJpeg(0);
             });
         })
         .catch(error => {
@@ -77,7 +78,7 @@ function saveBlob(blob, fileName) {
 }
 
 document.getElementById('saveButton').addEventListener('click', async () => {
-    if (!docManager) return;
+    if (!docManager && !currentUid) return;
 
     let format = document.getElementById('format').value;
     let filename = document.getElementById('filename').value;
@@ -155,6 +156,7 @@ document.getElementById('saveButton').addEventListener('click', async () => {
 });
 
 document.getElementById('fileInput').addEventListener('change', function (event) {
+    if (!docManager) return;
     const file = event.target.files[0];
     if (!file) {
         console.log("No file selected.");
@@ -213,6 +215,7 @@ document.getElementById('fileInput').addEventListener('change', function (event)
 });
 
 function openDocument(docUid) {
+    if (!docManager) return;
     editViewer.openDocument(docUid);
     captureViewer.openDocument(docUid);
     perspectiveViewer.openDocument(docUid);
@@ -280,15 +283,16 @@ async function activate(license) {
             //     },
             // ],
         };
-
+        let inputContainer = document.getElementById("input-container");
+        inputContainer.style.display = "block";
         let editContainer = document.getElementById("edit-viewer");
-        editContainer.style.display = "block";
+        editContainer.parentNode.style.display = "block";
         let captureContainer = document.getElementById("capture-viewer");
-        captureContainer.style.display = "block";
+        captureContainer.parentNode.style.display = "block";
         let perspectiveContainer = document.getElementById("perspective-viewer");
-        perspectiveContainer.style.display = "block";
+        perspectiveContainer.parentNode.style.display = "block";
         let browseContainer = document.getElementById("browse-viewer");
-        browseContainer.style.display = "block";
+        browseContainer.parentNode.style.display = "block";
 
         editViewer = new Dynamsoft.DDV.EditViewer({
             container: editContainer,
