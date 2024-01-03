@@ -89,6 +89,7 @@ document.getElementById('saveButton').addEventListener('click', async () => {
 
     let result = null;
     let doc = docManager.getDocument(currentUid);
+    toggleLoading(true);
     switch (format) {
         case "pdf":
             // https://www.dynamsoft.com/document-viewer/docs/api/interface/idocument/index.html#savetopdf
@@ -153,6 +154,7 @@ document.getElementById('saveButton').addEventListener('click', async () => {
             saveBlob(result, filename + "." + format);
             break;
     }
+    toggleLoading(false);
 });
 
 document.getElementById('fileInput').addEventListener('change', function (event) {
