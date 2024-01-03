@@ -39,6 +39,7 @@ function loadURLtoBlob(url) {
             doc.loadSource(blob).then(async () => {
                 await doc.saveToJpeg(0);
                 toggleLoading(false);
+                showViewer();
             });
         })
         .catch(error => {
@@ -235,6 +236,107 @@ function goToPage(number) {
     browseViewer.goToPage(number);
 }
 
+async function showViewer() {
+    if (!docManager) return;
+    const newUiConfig = {
+        type: Dynamsoft.DDV.Elements.Layout,
+        // flexDirection: "column",
+        className: "ddv-edit-viewer-desktop",
+        // children: [
+        //     Dynamsoft.DDV.Elements.MainView,
+        //     {
+        //         type: Dynamsoft.DDV.Elements.Layout,
+        //         className: "ddv-edit-viewer-header-desktop",
+        //         // children: [
+        //         //     {
+        //         //         type: Dynamsoft.DDV.Elements.Layout,
+        //         //         children: [
+        //         //             Dynamsoft.DDV.Elements.ThumbnailSwitch,
+        //         //             Dynamsoft.DDV.Elements.Zoom,
+        //         //             Dynamsoft.DDV.Elements.FitMode,
+        //         //             Dynamsoft.DDV.Elements.DisplayMode,
+        //         //             Dynamsoft.DDV.Elements.RotateLeft,
+        //         //             Dynamsoft.DDV.Elements.RotateRight,
+        //         //             Dynamsoft.DDV.Elements.Crop,
+        //         //             Dynamsoft.DDV.Elements.Filter,
+        //         //             Dynamsoft.DDV.Elements.Undo,
+        //         //             Dynamsoft.DDV.Elements.Redo,
+        //         //             Dynamsoft.DDV.Elements.DeleteCurrent,
+        //         //             Dynamsoft.DDV.Elements.DeleteAll,
+        //         //             Dynamsoft.DDV.Elements.Pan,
+        //         //         ],
+        //         //     },
+        //         //     {
+        //         //         type: Dynamsoft.DDV.Elements.Layout,
+        //         //         children: [
+        //         //             {
+        //         //                 type: Dynamsoft.DDV.Elements.Pagination,
+        //         //                 className: "ddv-edit-viewer-pagination-desktop",
+        //         //             },
+        //         //             {
+        //         //                 type: Dynamsoft.DDV.Elements.Load,
+        //         //                 className: "ddv-edit-viewer-pagination-desktop",
+        //         //                 events: {
+        //         //                     click: () => {
+        //         //                         // alert("load")
+        //         //                     },
+        //         //                 },
+        //         //             },
+        //         //             // Dynamsoft.DDV.Elements.Download,
+        //         //             // Dynamsoft.DDV.Elements.Print,
+        //         //         ],
+        //         //     },
+        //         // ],
+        //     },
+        // ],
+    };
+    let inputContainer = document.getElementById("input-container");
+    inputContainer.style.display = "block";
+    let editContainer = document.getElementById("edit-viewer");
+    editContainer.parentNode.style.display = "block";
+    let captureContainer = document.getElementById("capture-viewer");
+    captureContainer.parentNode.style.display = "block";
+    let perspectiveContainer = document.getElementById("perspective-viewer");
+    perspectiveContainer.parentNode.style.display = "block";
+    let browseContainer = document.getElementById("browse-viewer");
+    browseContainer.parentNode.style.display = "block";
+
+    editViewer = new Dynamsoft.DDV.EditViewer({
+        container: editContainer,
+        // uiConfig: newUiConfig,
+    });
+    editViewer.on("backToCaptureViewer", () => {
+        captureViewer.show();
+        editViewer.hide();
+        captureViewer.play();
+    });
+
+    captureViewer = new Dynamsoft.DDV.CaptureViewer({
+        container: captureContainer
+    });
+    const cameras = await captureViewer.getAllCameras();
+    if (cameras.length) {
+        await captureViewer.selectCamera(cameras[0]);
+    }
+    captureViewer.play({
+        resolution: [1920, 1080],
+    }).catch(err => {
+        alert(err.message)
+    });
+    captureViewer.on("showEditViewer", () => {
+        captureViewer.hide();
+        captureViewer.stop();
+        editViewer.show();
+    });
+
+    perspectiveViewer = new Dynamsoft.DDV.PerspectiveViewer({
+        container: perspectiveContainer
+    });
+
+    browseViewer = new Dynamsoft.DDV.BrowseViewer({
+        container: browseContainer
+    });
+}
 async function activate(license) {
     try {
         await Dynamsoft.DDV.setConfig({
@@ -244,104 +346,7 @@ async function activate(license) {
         Dynamsoft.DDV.setProcessingHandler("imageFilter", new Dynamsoft.DDV.ImageFilter());
         docManager = Dynamsoft.DDV.documentManager;
 
-        const newUiConfig = {
-            type: Dynamsoft.DDV.Elements.Layout,
-            // flexDirection: "column",
-            className: "ddv-edit-viewer-desktop",
-            // children: [
-            //     Dynamsoft.DDV.Elements.MainView,
-            //     {
-            //         type: Dynamsoft.DDV.Elements.Layout,
-            //         className: "ddv-edit-viewer-header-desktop",
-            //         // children: [
-            //         //     {
-            //         //         type: Dynamsoft.DDV.Elements.Layout,
-            //         //         children: [
-            //         //             Dynamsoft.DDV.Elements.ThumbnailSwitch,
-            //         //             Dynamsoft.DDV.Elements.Zoom,
-            //         //             Dynamsoft.DDV.Elements.FitMode,
-            //         //             Dynamsoft.DDV.Elements.DisplayMode,
-            //         //             Dynamsoft.DDV.Elements.RotateLeft,
-            //         //             Dynamsoft.DDV.Elements.RotateRight,
-            //         //             Dynamsoft.DDV.Elements.Crop,
-            //         //             Dynamsoft.DDV.Elements.Filter,
-            //         //             Dynamsoft.DDV.Elements.Undo,
-            //         //             Dynamsoft.DDV.Elements.Redo,
-            //         //             Dynamsoft.DDV.Elements.DeleteCurrent,
-            //         //             Dynamsoft.DDV.Elements.DeleteAll,
-            //         //             Dynamsoft.DDV.Elements.Pan,
-            //         //         ],
-            //         //     },
-            //         //     {
-            //         //         type: Dynamsoft.DDV.Elements.Layout,
-            //         //         children: [
-            //         //             {
-            //         //                 type: Dynamsoft.DDV.Elements.Pagination,
-            //         //                 className: "ddv-edit-viewer-pagination-desktop",
-            //         //             },
-            //         //             {
-            //         //                 type: Dynamsoft.DDV.Elements.Load,
-            //         //                 className: "ddv-edit-viewer-pagination-desktop",
-            //         //                 events: {
-            //         //                     click: () => {
-            //         //                         // alert("load")
-            //         //                     },
-            //         //                 },
-            //         //             },
-            //         //             // Dynamsoft.DDV.Elements.Download,
-            //         //             // Dynamsoft.DDV.Elements.Print,
-            //         //         ],
-            //         //     },
-            //         // ],
-            //     },
-            // ],
-        };
-        let inputContainer = document.getElementById("input-container");
-        inputContainer.style.display = "block";
-        let editContainer = document.getElementById("edit-viewer");
-        editContainer.parentNode.style.display = "block";
-        let captureContainer = document.getElementById("capture-viewer");
-        captureContainer.parentNode.style.display = "block";
-        let perspectiveContainer = document.getElementById("perspective-viewer");
-        perspectiveContainer.parentNode.style.display = "block";
-        let browseContainer = document.getElementById("browse-viewer");
-        browseContainer.parentNode.style.display = "block";
 
-        editViewer = new Dynamsoft.DDV.EditViewer({
-            container: editContainer,
-            // uiConfig: newUiConfig,
-        });
-        editViewer.on("backToCaptureViewer", () => {
-            captureViewer.show();
-            editViewer.hide();
-            captureViewer.play();
-        });
-
-        captureViewer = new Dynamsoft.DDV.CaptureViewer({
-            container: captureContainer
-        });
-        const cameras = await captureViewer.getAllCameras();
-        if (cameras.length) {
-            await captureViewer.selectCamera(cameras[0]);
-        }
-        captureViewer.play({
-            resolution: [1920, 1080],
-        }).catch(err => {
-            alert(err.message)
-        });
-        captureViewer.on("showEditViewer", () => {
-            captureViewer.hide();
-            captureViewer.stop();
-            editViewer.show();
-        });
-
-        perspectiveViewer = new Dynamsoft.DDV.PerspectiveViewer({
-            container: perspectiveContainer
-        });
-
-        browseViewer = new Dynamsoft.DDV.BrowseViewer({
-            container: browseContainer
-        });
     } catch (error) {
         console.error(error);
     }
