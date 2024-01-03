@@ -338,6 +338,7 @@ async function showViewer() {
     browseViewer = new Dynamsoft.DDV.BrowseViewer({
         container: browseContainer
     });
+    browseViewer.multiselectMode = true;
 }
 async function activate(license) {
     try {
