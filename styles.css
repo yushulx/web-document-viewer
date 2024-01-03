@@ -290,3 +290,12 @@ button {
 #input-container {
     display: none;
 }
+
+#imageGrid {
+    width: 1280px;
+    height: 720px;
+    margin: auto;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 50px;
+}

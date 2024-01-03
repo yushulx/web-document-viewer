@@ -5,7 +5,7 @@ let browseViewer = null;
 let isThumbnailShown = false;
 let docManager = null;
 let currentUid = null;
-
+let index = 0;
 // document.getElementById('rotateButton').addEventListener('click', () => {
 
 //     if (!editViewer) return;
@@ -167,9 +167,18 @@ document.getElementById('fileInput').addEventListener('change', function (event)
         const blob = new Blob([e.target.result], { type: file.type });
 
         async function createDoc() {
-            let doc = docManager.createDocument();
+            let doc = null;
+            if (!currentUid) {
+                doc = docManager.createDocument();
+                currentUid = doc.uid;
+                openDocument(currentUid);
+            }
+            else {
+                doc = docManager.getDocument(currentUid);
+            }
             await doc.loadSource(blob);
-            const result = await doc.saveToJpeg(0);
+            goToPage(index);
+            const result = await doc.saveToJpeg(index);
             const url = URL.createObjectURL(result);
             let img = document.getElementById("scanner-image");
             img.src = url;
@@ -177,31 +186,28 @@ document.getElementById('fileInput').addEventListener('change', function (event)
                 URL.revokeObjectURL(url);
             };
 
-            currentUid = doc.uid;
-            openDocument(currentUid);
-
             let thumbnails = document.getElementById("thumb-box");
             let count = doc.pages.length;
 
-            for (let i = 0; i < count; i++) {
+            for (let i = index; i < count; i++) {
                 let result = await doc.saveToJpeg(i);
                 let url = URL.createObjectURL(result);
                 let newImage = document.createElement('img');
                 newImage.setAttribute('src', url);
-
-                newImage.setAttribute('alt', currentUid);
+                newImage.setAttribute('alt', i);
                 if (thumbnails != null) {
                     thumbnails.appendChild(newImage);
                     newImage.addEventListener('click', e => {
                         if (e != null && e.target != null) {
                             let target = e.target;
                             img.src = target.src;
-                            currentUid = target.alt;
-                            openDocument(currentUid);
+                            goToPage(parseInt(target.alt, 10));
                         }
                     });
                 }
             }
+
+            index = count;
         }
         createDoc();
     };
@@ -219,6 +225,14 @@ function openDocument(docUid) {
     captureViewer.openDocument(docUid);
     perspectiveViewer.openDocument(docUid);
     browseViewer.openDocument(docUid);
+}
+
+function goToPage(number) {
+    if (!docManager) return;
+
+    editViewer.goToPage(number);
+    perspectiveViewer.goToPage(number);
+    browseViewer.goToPage(number);
 }
 
 async function activate(license) {
