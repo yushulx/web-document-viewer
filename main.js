@@ -38,6 +38,7 @@ function loadURLtoBlob(url) {
             let doc = docManager.createDocument();
             doc.loadSource(blob).then(async () => {
                 await doc.saveToJpeg(0);
+                toggleLoading(false);
             });
         })
         .catch(error => {
@@ -62,8 +63,6 @@ document.getElementById('activateButton').addEventListener('click', async () => 
 
     await activate(license);
     loadURLtoBlob('twain.pdf');
-
-    toggleLoading(false);
 });
 
 function saveBlob(blob, fileName) {
