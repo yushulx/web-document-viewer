@@ -179,7 +179,8 @@ document.getElementById('fileInput').addEventListener('change', function (event)
             else {
                 doc = docManager.getDocument(currentUid);
             }
-            await doc.loadSource(blob);
+            let pages = await doc.loadSource(blob);
+            console.log(pages);
             goToPage(index);
             const result = await doc.saveToJpeg(index);
             const url = URL.createObjectURL(result);
@@ -308,28 +309,32 @@ async function showViewer() {
         // uiConfig: newUiConfig,
     });
     editViewer.on("backToCaptureViewer", () => {
-        captureViewer.show();
-        editViewer.hide();
-        captureViewer.play();
+        // captureViewer.show();
+        // editViewer.hide();
+        // captureViewer.play();
     });
 
-    captureViewer = new Dynamsoft.DDV.CaptureViewer({
-        container: captureContainer
-    });
-    const cameras = await captureViewer.getAllCameras();
-    if (cameras.length) {
-        await captureViewer.selectCamera(cameras[0]);
+    try {
+        captureViewer = new Dynamsoft.DDV.CaptureViewer({
+            container: captureContainer
+        });
+        const cameras = await captureViewer.getAllCameras();
+        if (cameras.length) {
+            await captureViewer.selectCamera(cameras[0]);
+        }
+        captureViewer.play({
+            resolution: [1920, 1080],
+        }).catch(err => {
+            alert(err.message)
+        });
+        captureViewer.on("showEditViewer", () => {
+            // captureViewer.hide();
+            // captureViewer.stop();
+            // editViewer.show();
+        });
+    } catch (error) {
+        console.error(error);
     }
-    captureViewer.play({
-        resolution: [1920, 1080],
-    }).catch(err => {
-        alert(err.message)
-    });
-    captureViewer.on("showEditViewer", () => {
-        captureViewer.hide();
-        captureViewer.stop();
-        editViewer.show();
-    });
 
     perspectiveViewer = new Dynamsoft.DDV.PerspectiveViewer({
         container: perspectiveContainer
